@@ -17,7 +17,7 @@
 git config --global user.email &apos;builder@hostmobility.com&apos;
 git config --global user.name &apos;Host Mobility Builder&apos;
 git add .
-git commit -m &quot;test-commit&quot;
+git diff-index --quiet HEAD || git commit -m &quot;test-commit&quot;
 git push -u origin master</command>
     </hudson.tasks.Shell>
   </builders>
