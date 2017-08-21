@@ -64,7 +64,7 @@
 export TERM=xterm
 # sudo docker run --name docker_$JOB_NAME --rm --privileged -v ~/.ssh:/home/builder/.ssh -v /home/viktor/buildfolder:/media/buildfolder hostmobility/buildplatform-mx4 /bin/bash -c &quot;ls -la ; cd ; cd /media ; ls -la ; cd buildfolder ; ls -la ; cd workspace ; ls ; cd $JOB_NAME ; ls&quot;
 sudo docker run --name docker_$JOB_NAME --rm --privileged -v ~/.ssh:/home/builder/.ssh -v /home/viktor/buildfolder:/media/buildfolder hostmobility/buildplatform-mx4 /bin/bash -c &quot;cd /media/buildfolder/workspace/$JOB_NAME/mx4/t20 ; ./make_system.sh -t t20 -r /media/buildfolder/rootfs/$JOB_NAME -d /media/buildfolder/yocto-1.4.x -g -k -u -j $(nproc)&quot;
-
+echo stuff
 echo &quot;tested some changes&quot;
 </command>
     </hudson.tasks.Shell>
