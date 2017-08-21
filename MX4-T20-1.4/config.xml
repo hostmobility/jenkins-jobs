@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="org.jenkinsci.plugins.multiplescms.MultiSCM" plugin="multiple-scms@0.6">
+    <scms>
+      <hudson.plugins.git.GitSCM plugin="git@3.5.1">
+        <configVersion>2</configVersion>
+        <userRemoteConfigs>
+          <hudson.plugins.git.UserRemoteConfig>
+            <url>https://github.com/hostmobility/mx4.git</url>
+            <credentialsId>794c0513-4fe7-4aba-ba13-59d1e55c87b9</credentialsId>
+          </hudson.plugins.git.UserRemoteConfig>
+        </userRemoteConfigs>
+        <branches>
+          <hudson.plugins.git.BranchSpec>
+            <name>*/mx4-bsp-v1.4.x</name>
+          </hudson.plugins.git.BranchSpec>
+        </branches>
+        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+        <submoduleCfg class="list"/>
+        <extensions>
+          <hudson.plugins.git.extensions.impl.RelativeTargetDirectory>
+            <relativeTargetDir>mx4</relativeTargetDir>
+          </hudson.plugins.git.extensions.impl.RelativeTargetDirectory>
+          <hudson.plugins.git.extensions.impl.CleanCheckout/>
+        </extensions>
+      </hudson.plugins.git.GitSCM>
+      <hudson.plugins.git.GitSCM plugin="git@3.5.1">
+        <configVersion>2</configVersion>
+        <userRemoteConfigs>
+          <hudson.plugins.git.UserRemoteConfig>
+            <url>https://github.com/hostmobility/mx4-pic.git</url>
+            <credentialsId>794c0513-4fe7-4aba-ba13-59d1e55c87b9</credentialsId>
+          </hudson.plugins.git.UserRemoteConfig>
+        </userRemoteConfigs>
+        <branches>
+          <hudson.plugins.git.BranchSpec>
+            <name>*/mx4-bsp-v1.4.x</name>
+          </hudson.plugins.git.BranchSpec>
+        </branches>
+        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+        <submoduleCfg class="list"/>
+        <extensions>
+          <hudson.plugins.git.extensions.impl.RelativeTargetDirectory>
+            <relativeTargetDir>mx4/pic</relativeTargetDir>
+          </hudson.plugins.git.extensions.impl.RelativeTargetDirectory>
+          <hudson.plugins.git.extensions.impl.CleanCheckout/>
+        </extensions>
+      </hudson.plugins.git.GitSCM>
+    </scms>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -e
+export TERM=xterm
+# sudo docker run --name docker_$JOB_NAME --rm --privileged -v ~/.ssh:/home/builder/.ssh -v /home/viktor/buildfolder:/media/buildfolder hostmobility/buildplatform-mx4 /bin/bash -c &quot;ls -la ; cd ; cd /media ; ls -la ; cd buildfolder ; ls -la ; cd workspace ; ls ; cd $JOB_NAME ; ls&quot;
+sudo docker run --name docker_$JOB_NAME --rm --privileged -v ~/.ssh:/home/builder/.ssh -v /home/viktor/buildfolder:/media/buildfolder hostmobility/buildplatform-mx4 /bin/bash -c &quot;cd /media/buildfolder/workspace/$JOB_NAME/mx4/t20 ; ./make_system.sh -t t20 -r /media/buildfolder/rootfs/$JOB_NAME -d /media/buildfolder/yocto-1.4.x -g -k -u -j $(nproc)&quot;
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
