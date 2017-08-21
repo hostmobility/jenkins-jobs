@@ -24,7 +24,7 @@
       <submoduleCfg class="list"/>
       <extensions/>
     </scm>
-    <scriptPath>PipelineFromFileExample/Jenkinsfile</scriptPath>
+    <scriptPath>PipelineFromFileExample/PipelineScript</scriptPath>
     <lightweight>true</lightweight>
   </definition>
   <triggers/>
