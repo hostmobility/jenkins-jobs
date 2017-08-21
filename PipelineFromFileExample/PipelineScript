@@ -1,0 +1,178 @@
+node {
+    stage('mx4-update') {
+        dir ('mx4-update') {
+            git branch: 'mx4-2.0', url: 'git@github.com:hostmobility/mx4.git'
+        }
+    }
+
+    stage('bitbake') {
+        dir ('layers/openembedded-core/bitbake') {
+            git branch: '1.32', url: 'http://github.com/openembedded/bitbake.git'
+        }
+    }
+
+    stage('meta-angstrom') {
+        dir ('layers/meta-angstrom') {
+            git branch: 'angstrom-v2016.12-yocto2.2', url: 'http://github.com/Angstrom-distribution/meta-angstrom.git'
+        }
+    }
+
+    stage('meta-browser') {
+        dir ('layers/meta-browser') {
+            git branch: 'morty', url: 'http://github.com/OSSystems/meta-browser.git'
+        }
+    }
+
+    stage('meta-freescale-3rdparty') {
+        dir ('layers/meta-freescale-3rdparty') {
+            git branch: 'morty', url: 'http://github.com/Freescale/meta-freescale-3rdparty.git'
+        }
+    }
+
+    stage('meta-freescale-distro') {
+        dir ('layers/meta-freescale-distro') {
+            git branch: 'morty', url: 'http://github.com/Freescale/meta-freescale-distro.git'
+        }
+    }
+
+    stage('meta-freescale') {
+        dir ('layers/meta-freescale') {
+            git branch: 'morty', url: 'http://github.com/Freescale/meta-freescale.git'
+        }
+    }
+
+    stage('meta-linaro') {
+        dir ('layers/meta-linaro') {
+            git branch: 'morty', url: 'http://git.linaro.org/git-ro/openembedded/meta-linaro.git'
+        }
+    }
+
+    stage('meta-jetson-tk1') {
+        dir ('layers/meta-jetson-tk1') {
+            git branch: 'Morty', url: 'http://github.com/watatuki/meta-jetson-tk1.git'
+        }
+    }
+
+    stage('meta-lxde') {
+        dir ('layers/meta-lxde') {
+            git branch: 'morty', url: 'http://git.toradex.com/meta-lxde.git'
+        }
+    }
+
+    stage('meta-openembedded') {
+        dir ('layers/meta-openembedded') {
+            git branch: 'morty', url: 'http://github.com/openembedded/meta-openembedded.git'
+        }
+    }
+
+    stage('meta-qt4') {
+        dir ('layers/meta-qt4') {
+            git branch: 'morty', url: 'https://git.yoctoproject.org/git/meta-qt4'
+        }
+    }
+
+    stage('meta-qt5') {
+        dir ('layers/meta-qt5') {
+            git branch: 'morty', url: 'http://github.com/meta-qt5/meta-qt5.git'
+        }
+    }
+
+    stage('meta-toradex-bsp-common') {
+        dir ('layers/meta-toradex-bsp-common') {
+            git branch: 'morty', url: 'http://git.toradex.com/meta-toradex-bsp-common.git'
+        }
+    }
+
+    stage('meta-toradex-demos') {
+        dir ('layers/meta-toradex-demos') {
+            git branch: 'morty', url: 'http://git.toradex.com/meta-toradex-demos.git'
+        }
+    }
+
+    stage('meta-toradex-nxp') {
+        dir ('layers/meta-toradex-nxp') {
+            git branch: 'morty', url: 'http://git.toradex.com/meta-toradex-nxp.git'
+        }
+    }
+
+    stage('meta-toradex-tegra') {
+        dir ('layers/meta-toradex-tegra') {
+            git branch: 'morty', url: 'http://git.toradex.com/meta-toradex-tegra.git'
+        }
+    }
+
+    stage('openembedded-core') {
+        dir ('layers/openembedded-core') {
+            git branch: 'morty', url: 'http://github.com/openembedded/openembedded-core.git'
+        }
+    }
+
+    stage('meta-hostmobility-bsp') {
+        dir ('layers/meta-hostmobility-bsp') {
+            git branch: 'master', url: 'http://github.com/hostmobility/meta-hostmobility-bsp.git'
+        }
+    }
+
+    stage('meta-hostmobility-distro') {
+        dir ('layers/meta-hostmobility-distro') {
+            git branch: 'master', url: 'http://github.com/hostmobility/meta-hostmobility-distro.git'
+        }
+    }
+
+    stage('Inspect sources') {
+        echo 'Inspecting sources'
+        sh 'pwd'
+        sh 'ls -la layers'
+    }
+
+    env.MACHINES = "mx4-c61 mx4-mil mx4-t30 mx4-v61"
+
+    stage('Build') {
+        sh 'echo "Will build the following machines: ${MACHINES}"'
+
+        sh '''#!/bin/bash -l
+            export LICENSE_FLAGS_WHITELIST="closed"
+            export TEMPLATECONF=$PWD/layers/meta-hostmobility-distro/conf
+
+            source layers/openembedded-core/oe-init-build-env
+
+            # Whitelist Host Mobility license
+            grep closed conf/local.conf || echo 'LICENSE_FLAGS_WHITELIST += "closed"' >> conf/local.conf
+
+            # This will white list the BUILD_TAG environment variable which will make it
+            # accessible in bitbake "sandbox"
+            export BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE BUILD_TAG"
+
+            for machine in ${MACHINES}
+            do
+                echo "Building machine: $machine"
+                export MACHINE=$machine && bitbake console-hostmobility-image
+            done
+        '''
+    }
+
+    stage('Inspect results') {
+        echo 'Inspecting results'
+        sh 'pwd'
+        sh 'ls -laR deploy/images'
+    }
+
+    stage('Create update images') {
+        sh '''#!/bin/bash -l
+            cd mx4-update
+
+            # Clean up old directories. make_system.sh requires it!
+            sudo rm -rf deploy-*
+
+            for machine in ${MACHINES}
+            do
+                DEPLOY_DIR=../deploy/images/$machine/
+                ./make_system.sh -t `echo $machine | sed -e "s/^mx4-//"` -r $DEPLOY_DIR/console-hostmobility-image-$machine.tar.xz -k $DEPLOY_DIR/uImage
+            done
+        '''
+    }
+
+    stage('Archive artifacts') {
+            archiveArtifacts artifacts: 'mx4-update/deploy-*/release/*.tar.gz', excludes: ''
+    }
+}
