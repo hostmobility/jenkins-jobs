@@ -137,7 +137,7 @@ node {
         sh 'echo "Will build the following machines: ${MACHINES}"'
 
         sh '''#!/bin/bash -l
-            sudo docker run --name docker_$JOB_NAME --rm --privileged -v ~/.ssh:/home/builder/.ssh -v /home/viktor/buildfolder:/media/buildfolder hostmobility/buildplatform-mx4:2.0 /bin/bash -c "cd /media/buildfolder/workspace/$JOB_NAME ; jenkins-jobs/PipelineFromFileExample/./PipelineBuildScript.sh"
+            sudo docker run --name docker_$JOB_NAME --rm --privileged -v ~/.ssh:/home/builder/.ssh -v /home/viktor/buildfolder:/media/buildfolder hostmobility/buildplatform-mx4:2.0 /bin/bash -l -c "cd /media/buildfolder/workspace/$JOB_NAME ; jenkins-jobs/PipelineFromFileExample/./PipelineBuildScript.sh"
         '''
     }
 
