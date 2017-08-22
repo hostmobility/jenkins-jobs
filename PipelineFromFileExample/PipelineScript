@@ -118,6 +118,12 @@ node {
             git branch: 'master', url: 'http://github.com/hostmobility/meta-hostmobility-distro.git'
         }
     }
+    
+    stage('jenkins-jobs') {
+        dir ('jenkins-jobs') {
+            git branch: 'master', url: 'http://github.com/hostmobility/jenkins-jobs.git'
+        }
+    }
 
     stage('Inspect sources') {
         echo 'Inspecting sources'
@@ -131,23 +137,7 @@ node {
         sh 'echo "Will build the following machines: ${MACHINES}"'
 
         sh '''#!/bin/bash -l
-            export LICENSE_FLAGS_WHITELIST="closed"
-            export TEMPLATECONF=$PWD/layers/meta-hostmobility-distro/conf
-
-            source layers/openembedded-core/oe-init-build-env
-
-            # Whitelist Host Mobility license
-            grep closed conf/local.conf || echo 'LICENSE_FLAGS_WHITELIST += "closed"' >> conf/local.conf
-
-            # This will white list the BUILD_TAG environment variable which will make it
-            # accessible in bitbake "sandbox"
-            export BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE BUILD_TAG"
-
-            for machine in ${MACHINES}
-            do
-                echo "Building machine: $machine"
-                export MACHINE=$machine && bitbake console-hostmobility-image
-            done
+            sudo docker run --name docker_$JOB_NAME --rm --privileged -v ~/.ssh:/home/builder/.ssh -v /home/viktor/buildfolder:/media/buildfolder hostmobility/buildplatform-mx4 /bin/bash -c "cd /media/buildfolder/workspace/$JOB_NAME ; jenkins-jobs/PipelineFromFileExample/./PipelineBuildScript.sh"
         '''
     }
 
