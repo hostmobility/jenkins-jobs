@@ -1,4 +1,5 @@
 #!/bin/bash -l
+export MACHINES = "mx4-c61 mx4-mil mx4-t30 mx4-v61"
 export LICENSE_FLAGS_WHITELIST="closed"
 export TEMPLATECONF=$PWD/layers/meta-hostmobility-distro/conf
 
