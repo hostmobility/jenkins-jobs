@@ -19,7 +19,7 @@
     <hudson.tasks.Shell>
       <command>cd $JENKINS_HOME/jobs
 git add .
-git diff-index --quiet HEAD || git commit -m &quot;test-commit&quot;
+git diff-index --quiet HEAD || git commit -m &quot;jenkins settings changed&quot;
 git push -u origin master</command>
     </hudson.tasks.Shell>
   </builders>
