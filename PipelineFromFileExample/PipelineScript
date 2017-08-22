@@ -109,7 +109,7 @@ node {
 
     stage('meta-hostmobility-bsp') {
         dir ('layers/meta-hostmobility-bsp') {
-            git branch: 'patch-1', url: 'http://github.com/ViktorFriberg/meta-hostmobility-bsp.git'
+            git branch: 'master', url: 'http://github.com/hostmobility/meta-hostmobility-bsp.git'
         }
     }
 
