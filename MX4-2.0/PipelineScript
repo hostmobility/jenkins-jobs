@@ -1,0 +1,117 @@
+node {
+    stage('hm tools') {
+        dir ('mx4-update') {
+            git branch: 'mx4-2.0', url: 'git@github.com:hostmobility/mx4.git'
+        }
+        dir ('mx4-commercial') {
+            git branch: 'master', url: 'git@github.com:hostmobility/mx4-commercial.git'
+        }
+        dir ('layers/meta-hostmobility-bsp') {
+            git branch: 'master', url: 'http://github.com/hostmobility/meta-hostmobility-bsp.git'
+        }
+        dir ('layers/meta-hostmobility-distro') {
+            git branch: 'master', url: 'http://github.com/hostmobility/meta-hostmobility-distro.git'
+        }
+        dir ('jenkins-jobs') {
+            git branch: 'master', url: 'http://github.com/hostmobility/jenkins-jobs.git'
+        }
+    }
+
+    stage('yocto tools') {
+        dir ('layers/meta-browser') {
+            git branch: 'morty', url: 'http://github.com/OSSystems/meta-browser.git'
+        }
+        dir ('layers/meta-openembedded') {
+            git branch: 'morty', url: 'http://github.com/openembedded/meta-openembedded.git'
+        }
+        dir ('layers/openembedded-core') {
+            git branch: 'morty', url: 'http://github.com/openembedded/openembedded-core.git'
+        }
+        dir ('layers/openembedded-core/bitbake') {
+            git branch: '1.32', url: 'http://github.com/openembedded/bitbake.git'
+        }
+    }
+
+    stage('linux bsp') {
+        dir ('layers/meta-angstrom') {
+            git branch: 'angstrom-v2016.12-yocto2.2', url: 'http://github.com/Angstrom-distribution/meta-angstrom.git'
+        }
+        dir ('layers/meta-toradex-bsp-common') {
+            git branch: 'morty', url: 'http://git.toradex.com/meta-toradex-bsp-common.git'
+        }
+        dir ('layers/meta-toradex-demos') {
+            git branch: 'morty', url: 'http://git.toradex.com/meta-toradex-demos.git'
+        }
+        dir ('layers/meta-toradex-nxp') {
+            git branch: 'morty', url: 'http://git.toradex.com/meta-toradex-nxp.git'
+        }
+        dir ('layers/meta-toradex-tegra') {
+            git branch: 'morty', url: 'http://git.toradex.com/meta-toradex-tegra.git'
+        }
+        dir ('layers/meta-linaro') {
+            git branch: 'morty', url: 'http://git.linaro.org/git-ro/openembedded/meta-linaro.git'
+        }
+        dir ('layers/meta-jetson-tk1') {
+            git branch: 'Morty', url: 'http://github.com/watatuki/meta-jetson-tk1.git'
+        }
+        dir ('layers/meta-lxde') {
+            git branch: 'morty', url: 'http://git.toradex.com/meta-lxde.git'
+        }
+    }
+
+    stage('freescale') {
+        dir ('layers/meta-freescale-3rdparty') {
+            git branch: 'morty', url: 'http://github.com/Freescale/meta-freescale-3rdparty.git'
+        }
+        dir ('layers/meta-freescale-distro') {
+            git branch: 'morty', url: 'http://github.com/Freescale/meta-freescale-distro.git'
+        }
+        dir ('layers/meta-freescale') {
+            git branch: 'morty', url: 'http://github.com/Freescale/meta-freescale.git'
+        }
+    }
+
+    stage('platform dependencies') {
+        dir ('layers/meta-qt4') {
+            git branch: 'morty', url: 'https://git.yoctoproject.org/git/meta-qt4'
+        }
+        dir ('layers/meta-qt5') {
+            git branch: 'morty', url: 'http://github.com/meta-qt5/meta-qt5.git'
+        }
+    }
+
+    stage('Inspect sources') {
+        echo 'Inspecting sources'
+        sh 'pwd'
+        sh 'ls -la layers'
+    }
+
+    env.MACHINES = "mx4-c61 mx4-mil mx4-t30 mx4-v61"
+
+    stage('Build Images') {
+        sh '''#!/bin/bash -l
+            sudo docker run --name docker_$JOB_NAME --rm --privileged \
+            -v /home/viktor/.ssh:/home/builder/.ssh \
+            -v /home/viktor/buildfolder:/media/buildfolder \
+            hostmobility/buildplatform-mx4:2.0 /bin/bash \
+                -l -c "export MACHINES={$MACHINES} ; cd /media/buildfolder/workspace/$JOB_NAME ; jenkins-jobs/$JOB_NAME/./BuildScript.sh"
+        '''
+        echo 'Inspecting results'
+        sh 'pwd'
+        sh 'ls -laR deploy/images'
+    }
+
+    stage('Create Update Images') {
+        sh '''#!/bin/bash -l
+            sudo docker run --name docker_$JOB_NAME --rm --privileged \
+            -v /home/viktor/.ssh:/home/builder/.ssh \
+            -v /home/viktor/buildfolder:/media/buildfolder \
+            hostmobility/buildplatform-mx4:2.0 /bin/bash \
+                -l -c "export MACHINES={$MACHINES} ; cd /media/buildfolder/workspace/$JOB_NAME ; jenkins-jobs/$JOB_NAME/./GenerateUpdateImageScript.sh"
+        '''
+    }
+
+    stage('Archive Artifacts') {
+            archiveArtifacts artifacts: 'mx4-update/deploy-*/release/*.tar.gz', excludes: ''
+    }
+}
