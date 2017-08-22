@@ -5,6 +5,12 @@ node {
         }
     }
 
+    stage('mx4-commercial') {
+        dir ('mx4-commercial') {
+            git branch: 'master', url: 'git@github.com:hostmobility/mx4-commercial.git'
+        }
+    }
+    
     stage('bitbake') {
         dir ('layers/openembedded-core/bitbake') {
             git branch: '1.32', url: 'http://github.com/openembedded/bitbake.git'
