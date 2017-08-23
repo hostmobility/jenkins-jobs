@@ -90,8 +90,8 @@ node {
 
     stage('Build Images') {
         sh '''#!/bin/bash -l
-            export PIPEMACHINES="${env.PIPEMACHINES}"
-            export JOB_NAME=${env.JOB_NAME}
+            export PIPEMACHINES="$PIPEMACHINES"
+            export JOB_NAME=$JOB_NAME
             echo 'Starting "Build Images" docker'
             sudo docker run --name docker_$JOB_NAME --rm --privileged \
             -v /home/viktor/.ssh:/home/builder/.ssh \
@@ -107,8 +107,8 @@ node {
 
     stage('Create Update Images') {
         sh '''#!/bin/bash -l
-            export PIPEMACHINES="${env.PIPEMACHINES}"
-            export JOB_NAME=${env.JOB_NAME}
+            export PIPEMACHINES="$PIPEMACHINES"
+            export JOB_NAME=$JOB_NAME
             echo 'Starting "Create Update Images" docker'
             sudo docker run --name docker_$JOB_NAME --rm --privileged \
             -v /home/viktor/.ssh:/home/builder/.ssh \
