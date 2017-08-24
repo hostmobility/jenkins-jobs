@@ -16,7 +16,7 @@
         </userRemoteConfigs>
         <branches>
           <hudson.plugins.git.BranchSpec>
-            <name>*/mx4-bsp-v1.4.x</name>
+            <name>*/mx4-bsp-v1.4.x-newer-gcc-test</name>
           </hudson.plugins.git.BranchSpec>
         </branches>
         <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
@@ -70,7 +70,7 @@ sudo docker run --name docker_$JOB_NAME --rm --privileged \
     set -x ; \
 	cd /media/buildfolder/workspace/$JOB_NAME/mx4/t20 ; \
   ./make_system.sh -t t20 -r /media/buildfolder/rootfs/$JOB_NAME \
-    	-d /media/buildfolder/yocto-1.4.x -g -k -u -j $(nproc) ; \
+    	-d /media/buildfolder/yocto-1.4.x-newer-gcc -g -k -u -j $(nproc) ; \
     cd /media/buildfolder/workspace/$JOB_NAME ; \
     sudo mx4/t20/./make_system_sudo.sh clean&quot;
 echo stuff
