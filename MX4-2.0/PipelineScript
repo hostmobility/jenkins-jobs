@@ -86,7 +86,7 @@ node {
         sh 'ls -la layers'
     }
 
-    env.MACHINES = "mx4-c61 mx4-mil mx4-t30 mx4-v61"
+    env.MACHINES = "mx4-t20" /*mx4-c61 mx4-mil mx4-t30 mx4-v61"*/
 
     stage('Build Images') {
         sh 'set -x'
