@@ -10,8 +10,7 @@
         <configVersion>2</configVersion>
         <userRemoteConfigs>
           <hudson.plugins.git.UserRemoteConfig>
-            <url>https://github.com/hostmobility/mx4.git</url>
-            <credentialsId>794c0513-4fe7-4aba-ba13-59d1e55c87b9</credentialsId>
+            <url>git@github.com:hostmobility/mx4.git</url>
           </hudson.plugins.git.UserRemoteConfig>
         </userRemoteConfigs>
         <branches>
@@ -32,8 +31,7 @@
         <configVersion>2</configVersion>
         <userRemoteConfigs>
           <hudson.plugins.git.UserRemoteConfig>
-            <url>https://github.com/hostmobility/mx4-pic.git</url>
-            <credentialsId>794c0513-4fe7-4aba-ba13-59d1e55c87b9</credentialsId>
+            <url>git@github.com:hostmobility/mx4-pic.git</url>
           </hudson.plugins.git.UserRemoteConfig>
         </userRemoteConfigs>
         <branches>
